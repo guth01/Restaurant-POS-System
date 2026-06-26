@@ -1,0 +1,28 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: menu-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME:pos_menu}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:pistachio}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# MUST be the exact same secret as auth-service, otherwise tokens issued there
+# will fail signature validation here. Set JWT_SECRET env var identically
+# across every service before running.
+jwt:
+  secret: ${JWT_SECRET:thisIsADevOnlySecretKeyChangeItBeforeAnyRealDeploymentOk123456}
+
+logging:
+  level:
+    org.springframework.security: INFO

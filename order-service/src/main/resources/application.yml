@@ -1,0 +1,31 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: order-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME:pos_order}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:pistachio}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET:thisIsADevOnlySecretKeyChangeItBeforeAnyRealDeploymentOk123456}
+
+menu-service:
+  url: ${MENU_SERVICE_URL:http://localhost:8082}
+
+logging:
+  level:
+    com.pos.order: DEBUG

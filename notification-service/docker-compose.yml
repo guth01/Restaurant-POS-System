@@ -1,0 +1,32 @@
+version: "3.8"
+
+# Shared RabbitMQ instance for the whole project - both payment-service
+# (publisher) and notification-service (consumer) point at this same broker.
+# Run this once; you don't need a second copy anywhere else.
+#
+# Usage:
+#   docker-compose up -d
+#
+# Management UI: http://localhost:15672  (login: guest / guest)
+# AMQP port:      localhost:5672
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pos-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP protocol port - what Spring AMQP connects to
+      - "15672:15672"   # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:

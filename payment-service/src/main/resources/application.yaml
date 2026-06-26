@@ -1,0 +1,50 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME:pos_payment}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:pistachio}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+jwt:
+  secret: ${JWT_SECRET:thisIsADevOnlySecretKeyChangeItBeforeAnyRealDeploymentOk123456}
+
+order-service:
+  url: ${ORDER_SERVICE_URL:http://localhost:8084}
+
+table-service:
+  url: ${TABLE_SERVICE_URL:http://localhost:8083}
+
+# Razorpay TEST MODE credentials - never commit real values, override via
+# env vars. Get these from the Razorpay Dashboard > Settings > API Keys
+# (make sure "Test Mode" is toggled on).
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:test_id}
+  key-secret: ${RAZORPAY_KEY_SECRET:test_key}
+
+logging:
+  level:
+    com.example.paymentservice: DEBUG
+
+notification:
+  test-email: ${NOTIFICATION_TEST_EMAIL:waiter-test@example.com}

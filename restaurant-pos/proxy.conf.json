@@ -1,0 +1,24 @@
+{
+  "/api": {
+    "target": "http://localhost:8080",
+    "secure": false,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  },
+  "/api-payment": {
+    "target": "http://localhost:8085",
+    "secure": false,
+    "pathRewrite": {
+      "^/api-payment": ""
+    }
+  },
+  "/ws-api": {
+    "target": "http://localhost:8084",
+    "secure": false,
+    "ws": true,
+    "pathRewrite": {
+      "^/ws-api": ""
+    }
+  }
+}

@@ -1,0 +1,27 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME:pos_auth}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:pistachio}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  # 64+ char secret recommended for HS256/512. Override via JWT_SECRET env var in real environments.
+  secret: ${JWT_SECRET:thisIsADevOnlySecretKeyChangeItBeforeAnyRealDeploymentOk123456}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}   # 24 hours
+
+logging:
+  level:
+    org.springframework.security: INFO
