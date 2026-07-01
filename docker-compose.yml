@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: pos-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - pos-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: pos-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - pos-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - MENU_SERVICE_URL=http://menu-service:8082
+      - TABLE_SERVICE_URL=http://table-service:8083
+      - ORDER_SERVICE_URL=http://order-service:8084
+      - PAYMENT_SERVICE_URL=http://payment-service:8085
+    depends_on:
+      - auth-service
+      - menu-service
+      - table-service
+      - order-service
+      - payment-service
+    networks:
+      - pos-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_NAME=pos_auth
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/pos_auth?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      - mysql
+    networks:
+      - pos-network
+
+  menu-service:
+    build: ./menu-service
+    container_name: menu-service
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_NAME=pos_menu
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/pos_menu?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      - mysql
+    networks:
+      - pos-network
+
+  table-service:
+    build: ./table-service
+    container_name: table-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_NAME=pos_table
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/pos_table?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    depends_on:
+      - mysql
+    networks:
+      - pos-network
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8084:8084"
+    environment:
+      - DB_NAME=pos_order
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/pos_order?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - MENU_SERVICE_URL=http://menu-service:8082
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks:
+      - pos-network
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8085:8085"
+    environment:
+      - DB_NAME=pos_payment
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/pos_payment?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - ORDER_SERVICE_URL=http://order-service:8084
+      - TABLE_SERVICE_URL=http://table-service:8083
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks:
+      - pos-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    depends_on:
+      - rabbitmq
+    networks:
+      - pos-network
+
+  restaurant-pos:
+    build: ./restaurant-pos
+    container_name: restaurant-pos
+    ports:
+      - "4200:80"
+    networks:
+      - pos-network
+
+networks:
+  pos-network:
+    driver: bridge

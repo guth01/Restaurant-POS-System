@@ -39,8 +39,8 @@ table-service:
 # env vars. Get these from the Razorpay Dashboard > Settings > API Keys
 # (make sure "Test Mode" is toggled on).
 razorpay:
-  key-id: ${RAZORPAY_KEY_ID:test_id}
-  key-secret: ${RAZORPAY_KEY_SECRET:test_key}
+  key-id: ${RAZORPAY_KEY_ID}
+  key-secret: ${RAZORPAY_KEY_SECRET}
 
 logging:
   level:

@@ -58,6 +58,19 @@ Each service owns its own MySQL schema — no shared tables, no cross-service jo
 
 ---
 
+## 🐳 Running with Docker
+
+The entire microservice architecture (including the Angular frontend, MySQL, and RabbitMQ) is fully Dockerised and can be launched with a single command.
+
+1. Ensure Docker Desktop is running.
+2. From the root `restaurant` directory, run:
+   ```bash
+   docker-compose up -d --build
+   ```
+3. Access the frontend at `http://localhost:4200` and the API Gateway at `http://localhost:8080`.
+
+---
+
 ## 🧩 Services
 
 | Service | Port | Database | Responsibility |
@@ -231,6 +244,7 @@ Every service follows the same pattern: sane local-dev defaults baked into `appl
 | **Day 2** | order-service + API Gateway | First service-to-service call (Feign), live menu verification, gateway routing |
 | **Day 3** | payment-service, WebSocket, notification-service | Real Razorpay integration, STOMP push to kitchen/waiter, async email via RabbitMQ |
 | **Day 4** | Angular frontend *(planned)* | Waiter Terminal → Kitchen Display → Admin Dashboard |
+| **Day 5** | Dockerisation | Containerised all 8 services, database, and message broker into a unified `docker-compose` environment |
 
 ---
 
